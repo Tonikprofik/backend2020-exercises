@@ -1,4 +1,7 @@
 ﻿@using MbmStore.Models;
+@using MbmStore.Infrastructure;
+@addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+@model IEnumerable<Product>
 @{
     ViewBag.Title = "Index";
 }
@@ -14,59 +17,124 @@
 
 <body>
     <h2>The Books</h2>
-    @foreach (Book book in ViewBag.Books)
-    {
-        <div>
-            <strong>Title:</strong> @book.Title<br />
-            <strong>Author:</strong> @book.Author<br />
-            <strong>Price:</strong> @book.Price<br />
-            <strong>Publisher:</strong> @book.Publisher (@book.Published)<br />
-            <strong>ISBN:</strong> @book.ISBN<br /> <br />
-            <img src="Images/@book.ImageUrl" />
-        </div>
-    }
+    <table>
+        
+
+        @foreach (Book book in Model.OfType<Book>().ToList())
+        {<tr>
+            <td valign="top">
+            <img src="~/images/@book.ImageUrl" alt="@book.Title" style="width:100px" />
+            </td>
+            <td valign="top" style="250px">
+                <div>
+                    <strong>Title:</strong> @book.Title<br />
+                    <strong>Author:</strong> @book.Author<br />
+                    <strong>Price:</strong> @book.Price<br />
+                    <strong>Publisher:</strong> @book.Publisher (@book.Published)<br />
+                    <strong>ISBN:</strong> @book.ISBN<br /> <br />
+                    @*<img src="Images/@book.ImageUrl" />*@
+                </div>
+            </td>
+            <td style="vertical-align:bottom; padding-left:50px">
+                <div>
+                    <form id="@book.ProductID" asp-action="AddToCart" asp-controller="Cart" method="post">
+                        <input type="hidden" name="ProductID" value="@book.ProductID" />
+                        <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathandQuery()" />
+                        <span class="card-text p-1">
+                            <button type="submit" class="btn btn-success btn-sm pull-right" style="float:right">
+                                Add to Cart
+                            </button>
+                        </span>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        }
+    </table>
 
     <br />
     <br />
 
     <h2>The Music CDs</h2>
-    @foreach (MusicCD cd in ViewBag.MusicCDs)
-    {
-        <div>
-            <strong>Album:</strong> @cd.Title<br />
-            <strong>Artist:</strong> @cd.Artist<br />
-            <strong>Price:</strong> @cd.Price<br />
-            <strong>Publisher:</strong> @cd.Label (@cd.Released)<br /> <br />
-            <img src="Images/@cd.ImageUrl" />
-        </div>
-        <div>
-            <strong>Tracks:</strong>
+    <table>
+        @foreach (MusicCD cd in Model.OfType<MusicCD>().ToList())
+        {
+            <tr>
+                <td valign="top">
+                    <img src="~/images/@cd.ImageUrl" alt="@cd.Title" style="width:100px" />
+                </td>
+                <td valign="top" style="250px">
+                    <div>
+                        <strong>Album:</strong> @cd.Title<br />
+                        <strong>Artist:</strong> @cd.Artist<br />
+                        <strong>Price:</strong> @cd.Price<br />
+                        <strong>Publisher:</strong> @cd.Label (@cd.Released)<br /> <br />
 
-            <ol>
+                    </div>
+                    <div>
+                        <strong>Tracks:</strong>
 
-                @foreach (Track track in @cd.Tracks)
-                {
-                    <li>@track.Title (@track.Composer) @track.Length.Minutes:@track.Length.Seconds </li>
-                }
+                        <ol>
 
-            </ol>
-            <p><strong>Total playing time</strong>: @cd.GetPlayingTime().Minutes:@cd.GetPlayingTime().Seconds</p>
-        </div>
-    }
+                            @foreach (Track track in @cd.Tracks)
+                            {
+                                <li>@track.Title (@track.Composer) @track.Length.Minutes:@track.Length.Seconds </li>
+                            }
+
+                        </ol>
+                        <p><strong>Total playing time</strong>: @cd.GetPlayingTime().Minutes:@cd.GetPlayingTime().Seconds</p>
+                    </div>
+                </td>
+                <td style="vertical-align:bottom; padding-left:50px">
+                    <div>
+                        <form id="@cd.ProductID" asp-action="AddToCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="ProductID" value="@cd.ProductID" />
+                            <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathandQuery()" />
+                            <span class="card-text p-1">
+                                <button type="submit" class="btn btn-success btn-sm pull-right" style="float:right">
+                                    Add to Cart
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
 
     <br />
     <br />
 
     <h2>The Movies</h2>
-    @foreach (Movie movie in ViewBag.Movies)
-    {
-        <div>
-            <strong>Title:</strong> @movie.Title<br />
-            <strong>Director:</strong> @movie.Director<br>
-            <strong>Price:</strong> @String.Format("{0:0.00}", movie.Price) <br />
-            <img src="/Images/@movie.ImageUrl" alt="@movie.Title" />
-        </div>
-    }
+    <table>
+        @foreach (Movie movie in Model.OfType<Movie>().ToList())
+        {
+            <tr>
+                <td valign="top">
+                    <img src="~/images/@movie.ImageUrl" alt="@movie.Title" style="width:100px" />
+                </td>
+                <td valign="top" style="250px">
+                    <div>
+                        <strong>Title:</strong> @movie.Title<br />
+                        <strong>Director:</strong> @movie.Director<br>
+                        <strong>Price:</strong> @String.Format("{0:0.00}", movie.Price) <br />
+                    </div>
+                <td style="vertical-align:bottom; padding-left:50px">
+                    <div>
+                        <form id="@movie.ProductID" asp-action="AddToCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="ProductID" value="@movie.ProductID" />
+                            <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathandQuery()" />
+                            <span class="card-text p-1">
+                                <button type="submit" class="btn btn-success btn-sm pull-right" style="float:right">
+                                    Add to Cart
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
 
 </body>
 </html>
